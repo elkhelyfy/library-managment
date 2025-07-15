@@ -32,7 +32,7 @@ public class Category {
     @Column(length = 500)
     private String description;
 
-    @OneToMany(mappedBy = "category")
+    @ManyToMany(mappedBy = "categories")
     private Set<Book> books = new HashSet<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)

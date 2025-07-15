@@ -1,9 +1,7 @@
 package ma.iga.biblio.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,26 +23,22 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "isbn13", unique = true)
+    private String isbn13;
+
+    @Column(name = "isbn10", unique = true)
+    private String isbn10;
+
     @NotBlank
-    @Size(min = 1, max = 200)
+    @Size(min = 1, max = 500)
     @Column(nullable = false)
     private String title;
 
-    @Size(max = 2000)
-    @Column(length = 2000)
-    private String summary;
+    @Size(max = 500)
+    @Column(name = "subtitle")
+    private String subtitle;
 
-    @NotBlank
-    @Size(min = 10, max = 13)
-    @Column(name = "isbn", unique = true, nullable = false)
-    private String isbn;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
         name = "book_authors",
         joinColumns = @JoinColumn(name = "book_id"),
@@ -52,25 +46,31 @@ public class Book {
     )
     private Set<Author> authors = new HashSet<>();
 
-    @Column(name = "publication_date")
-    private Integer publicationYear;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "book_categories",
+        joinColumns = @JoinColumn(name = "book_id"),
+        inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
 
-    @Column(name = "edition")
-    private String edition;
+    @Column(name = "thumbnail")
+    private String thumbnail;
 
-    @Column(name = "publisher")
-    private String publisher;
+    @Column(name = "description", length = 5000)
+    private String description;
 
-    @Min(0)
-    @Column(name = "total_copies", nullable = false)
-    private Integer totalCopies;
+    @Column(name = "published_year")
+    private Integer publishedYear;
 
-    @Min(0)
-    @Column(name = "available_copies", nullable = false)
-    private Integer availableCopies;
+    @Column(name = "average_rating")
+    private Double averageRating;
 
-    @Column(name = "cover_image_url")
-    private String coverImageUrl;
+    @Column(name = "num_pages")
+    private Integer numPages;
+
+    @Column(name = "ratings_count")
+    private Integer ratingsCount;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -82,9 +82,6 @@ public class Book {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        if (availableCopies == null) {
-            availableCopies = totalCopies;
-        }
     }
 
     @PreUpdate

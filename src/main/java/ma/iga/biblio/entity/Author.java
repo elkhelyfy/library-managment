@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,10 +37,10 @@ public class Author {
     private String imageUrl;
 
     @Column(name = "birth_date")
-    private Integer birthYear;
+    private LocalDate birthDate;
 
     @Column(name = "death_date")
-    private Integer deathYear;
+    private LocalDate deathDate;
 
     @Column(name = "nationality")
     private String nationality;
